@@ -1,0 +1,13 @@
+.env
+__pycache__/
+.venv/
+node_modules/
+.expo/
+*.pyc
+.superpowers/
+/mobile/android/
+/mobile/ios/
+mobile/modules/*/android/build/
+.gradle/
+*.apk
+.pytest_cache/

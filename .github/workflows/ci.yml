@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: papertrade
+          POSTGRES_PASSWORD: papertrade
+          POSTGRES_DB: papertrade
+        ports: ["55432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U papertrade" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      PT_JWT_SECRET: ci-only-secret-ci-only-secret-ci-only-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Create the test database
+        run: PGPASSWORD=papertrade psql -h localhost -p 55432 -U papertrade -d postgres -c "CREATE DATABASE papertrade_test OWNER papertrade"
+      - run: uv sync
+        working-directory: backend
+      - name: Migrate the main database
+        run: uv run alembic upgrade head
+        working-directory: backend
+      - run: uv run pytest -q
+        working-directory: backend
+
+  mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+        working-directory: mobile
+      - run: npx tsc --noEmit
+        working-directory: mobile
+      - run: npm test
+        working-directory: mobile
+
+  android-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+        working-directory: mobile
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install
+        working-directory: mobile
+      - name: Kotlin unit tests (sync engine, HTTP client)
+        run: ./gradlew :papertrade-sync:testDebugUnitTest --console=plain
+        working-directory: mobile/android

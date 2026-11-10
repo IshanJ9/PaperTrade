@@ -1,0 +1,22 @@
+{
+  "server_time": "2026-11-08T12:47:12.882969Z",
+  "portfolio": {
+    "cash": "98100.0000",
+    "realized_pnl": "25.0000",
+    "unrealized_pnl": "30.0000",
+    "equity": "100130.0000",
+    "positions": [
+      { "symbol": "AAPL", "quantity": 10, "avg_cost": "190.0000", "last_price": "193.0000", "unrealized_pnl": "30.0000" }
+    ]
+  },
+  "orders": [
+    { "id": 3, "symbol": "MSFT", "side": "BUY", "type": "LIMIT", "quantity": 5, "price": "400.00", "status": "OPEN" },
+    { "id": 2, "symbol": "AAPL", "side": "SELL", "type": "MARKET", "quantity": 5, "price": null, "status": "FILLED" },
+    { "id": 1, "symbol": "AAPL", "side": "BUY", "type": "MARKET", "quantity": 15, "price": null, "status": "FILLED" }
+  ],
+  "transactions": [
+    { "id": 2, "order_id": 2, "symbol": "AAPL", "side": "SELL", "quantity": 5, "price": "195.0000", "created_at": "2026-11-08T12:40:00Z" },
+    { "id": 1, "order_id": 1, "symbol": "AAPL", "side": "BUY", "quantity": 15, "price": "190.0000", "created_at": "2026-11-08T12:30:00Z" }
+  ],
+  "watchlist": ["AAPL", "MSFT", "TSLA"]
+}
